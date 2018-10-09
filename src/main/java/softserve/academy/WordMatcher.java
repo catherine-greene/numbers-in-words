@@ -3,6 +3,7 @@ package softserve.academy;
 class WordMatcher {
 
     private static String[] digits = new String[10];
+    private static String[] digitsExcep = new String[2];
     private static String[] teens = new String[10];
     private static String[] tens = new String[10];
     private static String[] hundreds = new String[10];
@@ -21,6 +22,11 @@ class WordMatcher {
         digits[7] = "семь";
         digits[8] = "восем";
         digits[9] = "девять";
+    }
+
+    static {
+        digitsExcep[0] = "одна";
+        digitsExcep[1] = "две";
     }
 
     static {
@@ -86,24 +92,24 @@ class WordMatcher {
             case 1:
                 return digits[number];
             case 2:
-                if (number < 20) {
-                    return number == 10 ? tens[1] : teens[number - 10];
-                } else if (number % 10 == 0) {
-                    return tens[number / 10];
-                } else {
-                    return getTwoDigitNumString(num);
-                }
+                return getTwoDigitNumString(num, number);
             case 3:
-                if (number % 100 == 0) {
-                    return hundreds[number / 100];
-                } else {
-                    return getThreeDigitNumString(num);
-                }
+                return getThreeDigitNumString(num, number);
             case 4:
-//                if (number % 1000 == 0) {
-//                    return
-//                }
-                return "";
+                int numberDividedByThousand = number / 1000;
+                int remainder = number % 1000;
+                String thousandString = getThousandString(numberDividedByThousand);
+
+                if (remainder == 0) {
+                    return thousandString;
+                } else if (remainder < 10) {
+                    return thousandString + " " + digits[remainder];
+                } else {
+                    int remainderLength = String.valueOf(remainder).length();
+                    String restString = getRestString(remainderLength, remainder);
+                    return thousandString + " " + restString;
+                }
+
             case 5:
                 return "";
             case 6:
@@ -117,51 +123,80 @@ class WordMatcher {
             default:
                 return "";
         }
-//        return result;
     }
 
-    private static String getThreeDigitNumString(String num) {
-        StringBuilder strBuilder = new StringBuilder();
-        String[] numComponents = num.split("");
-        int hundredsComponent = Integer.parseInt(numComponents[0]);
-        int tensComponent = Integer.parseInt(numComponents[1]);
-        int digitsComponent = Integer.parseInt(numComponents[2]);
-        if (tensComponent == 0) {
-            strBuilder
-                    .append(hundreds[hundredsComponent])
-                    .append(" ")
-                    .append(digitsComponent == 0 ? "" : digits[digitsComponent]);
-        } else if (digitsComponent == 0) {
-            strBuilder
-                    .append(hundreds[hundredsComponent])
-                    .append(" ")
-                    .append(tens[tensComponent]);
-        } else if (tensComponent == 1) {
-            strBuilder
-                    .append(hundreds[hundredsComponent])
-                    .append(" ")
-                    .append(teens[digitsComponent]);
+    private static String getRestString(int length, int num) {
+        if (length == 2) {
+            return getTwoDigitNumString(String.valueOf(num), num);
         } else {
+            return getThreeDigitNumString(String.valueOf(num), num);
+        }
+    }
+
+    private static String getThousandString(int numberDividedByThousand) {
+        if (numberDividedByThousand == 1) {
+            return digitsExcep[0] + " " + thousands[0];
+        } else if (numberDividedByThousand == 2) {
+            return digitsExcep[1] + " " + thousands[1];
+        } else if (numberDividedByThousand == 3 || numberDividedByThousand == 4) {
+            return digits[numberDividedByThousand] + " " + thousands[1];
+        } else {
+            return digits[numberDividedByThousand] + " " + thousands[2];
+        }
+    }
+
+    private static String getThreeDigitNumString(String num, int number) {
+        if (number % 100 == 0) {
+            return hundreds[number / 100];
+        } else {
+            StringBuilder strBuilder = new StringBuilder();
+            String[] numComponents = num.split("");
+            int hundredsComponent = Integer.parseInt(numComponents[0]);
+            int tensComponent = Integer.parseInt(numComponents[1]);
+            int digitsComponent = Integer.parseInt(numComponents[2]);
+            if (tensComponent == 0) {
+                strBuilder
+                        .append(hundreds[hundredsComponent])
+                        .append(" ")
+                        .append(digitsComponent == 0 ? "" : digits[digitsComponent]);
+            } else if (digitsComponent == 0) {
+                strBuilder
+                        .append(hundreds[hundredsComponent])
+                        .append(" ")
+                        .append(tens[tensComponent]);
+            } else if (tensComponent == 1) {
+                strBuilder
+                        .append(hundreds[hundredsComponent])
+                        .append(" ")
+                        .append(teens[digitsComponent]);
+            } else {
+                strBuilder
+                        .append(hundreds[hundredsComponent])
+                        .append(" ")
+                        .append(tens[tensComponent])
+                        .append(" ")
+                        .append(digits[digitsComponent]);
+            }
+            return strBuilder.toString();
+        }
+    }
+
+    private static String getTwoDigitNumString(String num, int number) {
+        if (number < 20) {
+            return number == 10 ? tens[1] : teens[number - 10];
+        } else if (number % 10 == 0) {
+            return tens[number / 10];
+        } else {
+            StringBuilder strBuilder = new StringBuilder();
+            String[] numComponents = num.split("");
+            int tensComponent = Integer.parseInt(numComponents[0]);
+            int digitsComponent = Integer.parseInt(numComponents[1]);
             strBuilder
-                    .append(hundreds[hundredsComponent])
-                    .append(" ")
                     .append(tens[tensComponent])
                     .append(" ")
                     .append(digits[digitsComponent]);
+
+            return strBuilder.toString();
         }
-        return strBuilder.toString();
-    }
-
-    private static String getTwoDigitNumString(String num) {
-        StringBuilder strBuilder = new StringBuilder();
-        String[] numComponents = num.split("");
-        int tensComponent = Integer.parseInt(numComponents[0]);
-        int digitsComponent = Integer.parseInt(numComponents[1]);
-        strBuilder
-                .append(tens[tensComponent])
-                .append(" ")
-                .append(digits[digitsComponent]);
-
-        return strBuilder.toString();
     }
 }
