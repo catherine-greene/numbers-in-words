@@ -1,21 +1,16 @@
 package softserve.academy;
 
-import java.util.Scanner;
-
 public class App {
     public static void main(String[] args) {
 
-        Scanner s = new Scanner(System.in);
-        String input = s.nextLine();
+        String input = "";
+        if (args.length == 1) {
+            input = args[0];
 
-//        if (args.length == 1) {
-//            input = args[0];
-//
-//        } else if (args.length > 1) {
-//            input = concatArgs(args);
-//        }
+        } else if (args.length > 1) {
+            input = concatArgs(args);
+        }
         try {
-//            long num = parseToLong(input);
             String output = WordMatcher.match(input);
             System.out.println(output);
         } catch (NumberFormatException ex) {

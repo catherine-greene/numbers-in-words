@@ -88,30 +88,34 @@ class WordMatcher {
 
     static String match(String num) throws NumberFormatException {
         int number = Integer.parseInt(num);
+        int remainderOfDivisionOn1000 = number % 1000;
+        String thousandString = getThousandString(number / 1000);
+
         switch (num.length()) {
             case 1:
-                return digits[number];
+                return getOneDigitString(number);
             case 2:
-                return getTwoDigitNumString(num, number);
+                return getTwoDigitNumString(number);
             case 3:
-                return getThreeDigitNumString(num, number);
+                return getThreeDigitNumString(number);
             case 4:
-                int numberDividedByThousand = number / 1000;
-                int remainder = number % 1000;
-                String thousandString = getThousandString(numberDividedByThousand);
 
-                if (remainder == 0) {
+                if (remainderOfDivisionOn1000 == 0) {
                     return thousandString;
-                } else if (remainder < 10) {
-                    return thousandString + " " + digits[remainder];
                 } else {
-                    int remainderLength = String.valueOf(remainder).length();
-                    String restString = getRestString(remainderLength, remainder);
+                    int remainderLength = getIntLength(remainderOfDivisionOn1000);
+                    String restString = getRestString(remainderLength, remainderOfDivisionOn1000);
                     return thousandString + " " + restString;
                 }
 
             case 5:
-                return "";
+                if (remainderOfDivisionOn1000 == 0) {
+                    return thousandString;
+                } else {
+                    int remainderLength = getIntLength(remainderOfDivisionOn1000);
+                    String restString = getRestString(remainderLength, remainderOfDivisionOn1000);
+                    return thousandString + " " + restString;
+                }
             case 6:
                 return "";
             case 7:
@@ -125,32 +129,97 @@ class WordMatcher {
         }
     }
 
+    private static int getIntLength(int intNum) {
+        return String.valueOf(intNum).length();
+    }
+
+    private static String getOneDigitString(int number) {
+        return digits[number];
+    }
+
     private static String getRestString(int length, int num) {
-        if (length == 2) {
-            return getTwoDigitNumString(String.valueOf(num), num);
-        } else {
-            return getThreeDigitNumString(String.valueOf(num), num);
+        switch (length) {
+            case 1:
+                return getOneDigitString(num);
+            case 2:
+                return getTwoDigitNumString(num);
+            case 3:
+                return getThreeDigitNumString(num);
+            default:
+                return "";
         }
     }
 
-    private static String getThousandString(int numberDividedByThousand) {
-        if (numberDividedByThousand == 1) {
-            return digitsExcep[0] + " " + thousands[0];
-        } else if (numberDividedByThousand == 2) {
-            return digitsExcep[1] + " " + thousands[1];
-        } else if (numberDividedByThousand == 3 || numberDividedByThousand == 4) {
-            return digits[numberDividedByThousand] + " " + thousands[1];
-        } else {
-            return digits[numberDividedByThousand] + " " + thousands[2];
+    private static String getThousandString(int thousandNum) {
+        switch (getIntLength(thousandNum)) {
+            case 1:
+                if (thousandNum == 1) {
+                    return digitsExcep[0] + " " + thousands[0];
+                } else if (thousandNum == 2) {
+                    return digitsExcep[1] + " " + thousands[1];
+                } else if (thousandNum == 3 || thousandNum == 4) {
+                    return digits[thousandNum] + " " + thousands[1];
+                } else {
+                    return digits[thousandNum] + " " + thousands[2];
+                }
+            case 2:
+                if (thousandNum > 10 && thousandNum < 20) {
+                    return getTwoDigitNumString(thousandNum) + " " + thousands[0];
+                }
+                int remainder = thousandNum % 10;
+                if (remainder == 1) {
+                    return getTwoDigitNumString(thousandNum - remainder) + " " + digitsExcep[0] + " " + thousands[0];
+                } else if (remainder == 2) {
+                    return getTwoDigitNumString(thousandNum - remainder) + " " + digitsExcep[1] + " " + thousands[1];
+                } else if (remainder == 3 || thousandNum % 10 == 4) {
+                    return getTwoDigitNumString(thousandNum - remainder) + " " + digits[thousandNum % 10] + " " + thousands[1];
+                } else {
+                    return getTwoDigitNumString(thousandNum) + " " + thousands[2];
+                }
+            case 3:
+                if (thousandNum % 10 == 1) {
+                    return getThreeDigitNumString(thousandNum / 10) + " " + digitsExcep[0] + " " + thousands[0];
+                } else if (thousandNum % 10 == 2) {
+                    return getThreeDigitNumString(thousandNum / 10) + " " + digitsExcep[1] + " " + thousands[1];
+                } else if (thousandNum % 10 == 3 || thousandNum % 10 == 4) {
+                    return getThreeDigitNumString(thousandNum / 10) + " " + digits[thousandNum % 10] + " " + thousands[1];
+                } else {
+                    return getThreeDigitNumString(thousandNum) + thousands[2];
+                }
+
+            default:
+                return "";
+//        if (thousandNum == 1) {
+//            return digitsExcep[0] + " " + thousands[0];
+//        } else if (thousandNum == 2) {
+//            return digitsExcep[1] + " " + thousands[1];
+//        } else if (thousandNum == 3 || thousandNum == 4) {
+//            return digits[thousandNum] + " " + thousands[1];
+////:TODO:
+//        } else if (thousandNum > 20 || thousandNum == 10) {
+//            if (thousandNum % 10 == 1) {
+//                return getTwoDigitNumString(thousandNum) + " " + digitsExcep[0] + " " + thousands[0];
+//            } else if (thousandNum % 10 == 2) {
+//                return getTwoDigitNumString(thousandNum) + " " + digitsExcep[1] + " " + thousands[1];
+//
+//            } else {
+//                return getTwoDigitNumString(thousandNum) + " " + thousands[2];
+//            }
+//        } else if (thousandNum > 10 && thousandNum < 20) {
+//            return teens[thousandNum - 10] + " " + thousands[2];
+//
+//        } else {
+//            return digits[thousandNum] + " " + thousands[2];
+//        }
         }
     }
 
-    private static String getThreeDigitNumString(String num, int number) {
+    private static String getThreeDigitNumString(int number) {
         if (number % 100 == 0) {
             return hundreds[number / 100];
         } else {
             StringBuilder strBuilder = new StringBuilder();
-            String[] numComponents = num.split("");
+            String[] numComponents = String.valueOf(number).split("");
             int hundredsComponent = Integer.parseInt(numComponents[0]);
             int tensComponent = Integer.parseInt(numComponents[1]);
             int digitsComponent = Integer.parseInt(numComponents[2]);
@@ -181,14 +250,14 @@ class WordMatcher {
         }
     }
 
-    private static String getTwoDigitNumString(String num, int number) {
+    private static String getTwoDigitNumString(int number) {
         if (number < 20) {
             return number == 10 ? tens[1] : teens[number - 10];
         } else if (number % 10 == 0) {
             return tens[number / 10];
         } else {
             StringBuilder strBuilder = new StringBuilder();
-            String[] numComponents = num.split("");
+            String[] numComponents = String.valueOf(number).split("");
             int tensComponent = Integer.parseInt(numComponents[0]);
             int digitsComponent = Integer.parseInt(numComponents[1]);
             strBuilder
