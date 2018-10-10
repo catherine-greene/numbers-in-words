@@ -11,7 +11,8 @@ public class App {
             input = concatArgs(args);
         }
         try {
-            String output = WordMatcher.match(input);
+            long num = Long.parseLong(input);
+            String output = WordMatcher.match(num);
             System.out.println(output);
         } catch (NumberFormatException ex) {
             System.out.println("Invalid input number.  Enter a number in range of 0 and 999 999 999 999!");
@@ -24,11 +25,6 @@ public class App {
         for (String arg : args) {
             strBuff.append(arg);
         }
-
         return strBuff.toString();
-    }
-
-    private static long parseToLong(String input) throws NumberFormatException {
-        return Long.parseLong(input);
     }
 }

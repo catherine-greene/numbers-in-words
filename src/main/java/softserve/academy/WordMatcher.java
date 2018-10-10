@@ -86,24 +86,23 @@ class WordMatcher {
         billions[2] = "миллиардов";
     }
 
-    static String match(String num) throws NumberFormatException {
-        int number = Integer.parseInt(num);
-        int remainderOfDivisionOn1000 = number % 1000;
-        String thousandString = getThousandString(number / 1000);
+    static String match(long number) {
+        int remainderOfDivisionOn1000 = (int) (number % 1000);
+        String thousandString = getThousandString((int) (number / 1000));
 
-        switch (num.length()) {
+        switch (getNumLength(number)) {
             case 1:
-                return getOneDigitString(number);
+                return getOneDigitString((int) number);
             case 2:
-                return getTwoDigitNumString(number);
+                return getTwoDigitNumString((int) number);
             case 3:
-                return getThreeDigitNumString(number);
+                return getThreeDigitNumString((int) number);
             case 4:
 
                 if (remainderOfDivisionOn1000 == 0) {
                     return thousandString;
                 } else {
-                    int remainderLength = getIntLength(remainderOfDivisionOn1000);
+                    int remainderLength = getNumLength(remainderOfDivisionOn1000);
                     String restString = getRestString(remainderLength, remainderOfDivisionOn1000);
                     return thousandString + " " + restString;
                 }
@@ -112,7 +111,7 @@ class WordMatcher {
                 if (remainderOfDivisionOn1000 == 0) {
                     return thousandString;
                 } else {
-                    int remainderLength = getIntLength(remainderOfDivisionOn1000);
+                    int remainderLength = getNumLength(remainderOfDivisionOn1000);
                     String restString = getRestString(remainderLength, remainderOfDivisionOn1000);
                     return thousandString + " " + restString;
                 }
@@ -129,7 +128,7 @@ class WordMatcher {
         }
     }
 
-    private static int getIntLength(int intNum) {
+    private static int getNumLength(long intNum) {
         return String.valueOf(intNum).length();
     }
 
@@ -151,7 +150,7 @@ class WordMatcher {
     }
 
     private static String getThousandString(int thousandNum) {
-        switch (getIntLength(thousandNum)) {
+        switch (getNumLength(thousandNum)) {
             case 1:
                 if (thousandNum == 1) {
                     return digitsExcep[0] + " " + thousands[0];
@@ -189,28 +188,6 @@ class WordMatcher {
 
             default:
                 return "";
-//        if (thousandNum == 1) {
-//            return digitsExcep[0] + " " + thousands[0];
-//        } else if (thousandNum == 2) {
-//            return digitsExcep[1] + " " + thousands[1];
-//        } else if (thousandNum == 3 || thousandNum == 4) {
-//            return digits[thousandNum] + " " + thousands[1];
-////:TODO:
-//        } else if (thousandNum > 20 || thousandNum == 10) {
-//            if (thousandNum % 10 == 1) {
-//                return getTwoDigitNumString(thousandNum) + " " + digitsExcep[0] + " " + thousands[0];
-//            } else if (thousandNum % 10 == 2) {
-//                return getTwoDigitNumString(thousandNum) + " " + digitsExcep[1] + " " + thousands[1];
-//
-//            } else {
-//                return getTwoDigitNumString(thousandNum) + " " + thousands[2];
-//            }
-//        } else if (thousandNum > 10 && thousandNum < 20) {
-//            return teens[thousandNum - 10] + " " + thousands[2];
-//
-//        } else {
-//            return digits[thousandNum] + " " + thousands[2];
-//        }
         }
     }
 
